@@ -14,6 +14,8 @@ services:
     image: mongo:6
     container_name: mongo2
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    ports:
+      - "27018:27017" # Map mongo2's 27017 to host's 27018
     networks:
       - mongo-net
 
@@ -21,6 +23,8 @@ services:
     image: mongo:6
     container_name: mongo3
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    ports:
+      - "27019:27017" # Map mongo3's 27017 to host's 27019
     networks:
       - mongo-net
 

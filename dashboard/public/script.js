@@ -1,12 +1,230 @@
-/* react to menu click */
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawCharts);
+
+let pieChart, pieData, pieOptions;
+let lineChart, lineData, lineOptions;
+let firstDraw = true;
+function updatePieChart(fr,de,es,us,it) {
+      pieData.setValue(0, 1, fr);
+      pieData.setValue(1, 1, de);
+      pieData.setValue(2, 1, es);
+      pieData.setValue(3, 1, us);
+      pieData.setValue(4, 1, it);
+
+      pieChart.draw(pieData, pieOptions);
+  }
+
+function updateLineChart(food,medicine,service,equipment)  {
+
+    const values = lineData.slice(1).flatMap(row => row.slice(1));
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+
+    // Optional buffer
+    const buffer = (max - min) * 0.1 || 10;
+    lineOptions.vAxis.maxValue = Math.ceil(max + buffer);
+
+
+    const now = new Date();
+
+    lineData.push([now, food,medicine,service,equipment]);
+
+    // Remove data older than 60 seconds
+    const cutoff = new Date(now.getTime() - 60000);
+    lineData = [lineData[0]].concat(
+      lineData.slice(1).filter(row => row[0] >= cutoff)
+    );
+
+    const dataTable = google.visualization.arrayToDataTable(lineData);
+
+    // Disable startup animation after first draw
+    if (!firstDraw) lineOptions.animation.startup = false;
+    lineChart.draw(dataTable, lineOptions);
+    firstDraw = false;
+}
+
+
+
+function drawCharts() {
+    lineChart = new google.visualization.LineChart(document.getElementById('line-chart'));
+    lineOptions = {
+    backgroundColor: 'transparent',
+    colors: ['cornflowerblue', 'tomato'],
+    fontName: 'Open Sans',
+    focusTarget: 'category',
+    chartArea: {
+      left: 50,
+      top: 10,
+      width: '100%',
+      height: '70%'
+    },
+    hAxis: {
+      textStyle: { fontSize: 11 },
+      format: 'HH:mm:ss',
+      baselineColor: 'transparent',
+      gridlines: { color: 'transparent' }
+    },
+    vAxis: {
+      baselineColor: '#DDD',
+      gridlines: { color: '#DDD', count: 4 },
+      textStyle: { fontSize: 11 }
+    },
+	legend: 'none',
+    animation: {
+      duration: 500,
+      easing: 'out',
+      startup: true  // Only true for first draw
+    }
+  };
+    lineData = [['Time', 'Food', 'Medicine', 'Service', 'Equipment']];
+
+    pieData = google.visualization.arrayToDataTable([
+        ['Country', '# Orders'],
+        ['FR',      0],
+        ['DE',   0],
+        ['ES',   0],
+        ['US',    0],
+        ['IT',  0]
+    ]);
+   pieOptions = {
+  backgroundColor: 'transparent',
+  pieHole: 0.4,
+  colors: ["cornflowerblue", "olivedrab", "orange", "tomato", "crimson", "purple", "turquoise", "forestgreen", "navy", "gray"],
+  pieSliceText: 'value',
+  tooltip: {
+    text: 'percentage'
+  },
+  fontName: 'Open Sans',
+  chartArea: {
+      left: 50,
+    width: '100%',
+    height: '94%'
+  },
+  legend: {
+    textStyle: {
+      fontSize: 13
+    }
+  },
+  animation: {
+    duration: 500, // Adjust duration for visibility
+    easing: 'out' // Choose 'linear', 'inAndOut', etc. for different effects
+  }
+};
+   pieChart = new google.visualization.PieChart(document.getElementById('pie-chart'));
+   pieChart.draw(pieData, pieOptions);
+}
+
+
+
   document.addEventListener("DOMContentLoaded", function () {
-  const socket = new WebSocket('ws://localhost:3000');
-              socket.onmessage = function(event) {
-                  const data = JSON.parse(event.data);
-                  updateMachineData(data);
-              };
+
+    function updateProgressBar(value, progressBarClass, progressValueId) {
+    const progressBar = document.querySelector(progressBarClass);
+    const progressValueText = document.getElementById(progressValueId);
+
+    // Show actual value, even over 100
+    progressBar.style.width = value + '%';
+    progressBar.setAttribute('aria-valuenow', value);
+    progressValueText.textContent = value + '%';
+
+    // Remove previous color classes
+    progressBar.classList.remove('bg-danger', 'bg-warning', 'bg-success');
+    progressValueText.classList.remove('text-danger', 'text-warning', 'text-success');
+
+    // Add color based on value
+    if (value < 60) {
+      progressBar.classList.add('bg-danger');
+      progressValueText.classList.add('text-danger');
+    } else if (value < 100) {
+      progressBar.classList.add('bg-warning');
+      progressValueText.classList.add('text-warning');
+    } else {
+      progressBar.classList.add('bg-success');
+      progressValueText.classList.add('text-success');
+    }
+  }
+    const progressDataIncome = {value: 0};
+    const progressDataCustomers = {value: 0};
+    // Initial render
+    updateProgressBar(progressDataIncome.value, '.progress-bar-income', 'progress_value_income');
+    updateProgressBar(progressDataCustomers.value, '.progress-bar-customers', 'progress_value_customers');
+
+    const targetIncome = 50000
+    const targetCustomers = 40
+
+    const socket = new WebSocket('ws://localhost:3000');
+    socket.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      console.log(data)
 
 
+        const newOrders = document.getElementById('new_orders');
+        if (newOrders) newOrders.textContent = data.orderCount;
+
+        const totalCustomers = document.getElementById('total_customers');
+        if (totalCustomers) totalCustomers.textContent = data.userCount;
+
+        const totalAmount = document.getElementById('total_amount');
+        if (totalAmount) totalAmount.textContent = data.totalOrderAmount + ".00 €";
+
+
+
+
+        const pendingOrders = document.getElementById('pending_orders');
+        if(pendingOrders) pendingOrders.textContent = data.statusCounts.Pending;
+        const shippedOrders = document.getElementById('shipped_orders');
+        if(shippedOrders) shippedOrders.textContent = data.statusCounts.Shipped;
+        const receivedOrders = document.getElementById('received_orders');
+        if(receivedOrders) receivedOrders.textContent = data.statusCounts.Received;
+
+
+        progressDataIncome.value = Math.round((data.totalOrderAmount/targetIncome)*100);
+        progressDataCustomers.value = Math.round((data.userCount/targetCustomers)*100);
+
+        updateProgressBar(progressDataIncome.value, '.progress-bar-income', 'progress_value_income');
+        updateProgressBar(progressDataCustomers.value, '.progress-bar-customers', 'progress_value_customers');
+
+        const countryCounts = data.ordersByCountry.reduce((acc, curr) => {
+          acc[curr._id] = curr.count;
+          return acc;
+        }, {});
+        updatePieChart(
+          countryCounts.FR || 0, //is missing, it falls back to 0
+          countryCounts.DE || 0,
+          countryCounts.ES || 0,
+          countryCounts.US || 0,
+          countryCounts.IT || 0
+        );
+
+        const firstKey = Object.keys(data.item_revenues)[0];
+        const firstValue = data.item_revenues[firstKey] || {};
+        const secondKey = Object.keys(data.item_revenues)[1];
+        const secondValue = data.item_revenues[secondKey] || {};
+        const thirdKey = Object.keys(data.item_revenues)[2];
+        const thirdValue = data.item_revenues[thirdKey] || {};
+
+
+
+        const firstItem = document.getElementById('first_item');
+        const firstQuantity = document.getElementById('first_quantity');
+        if (firstItem) firstItem.textContent = firstKey;
+        if (firstQuantity) firstQuantity.textContent = firstValue.quantity;
+        const secondItem = document.getElementById('second_item');
+        const secondQuantity = document.getElementById('second_quantity');
+        if (secondItem) secondItem.textContent = secondKey;
+        if (secondQuantity) secondQuantity.textContent = secondValue.quantity;
+        const thirdItem = document.getElementById('third_item');
+        const thirdQuantity = document.getElementById('third_quantity');
+        if (thirdItem) thirdItem.textContent = thirdKey;
+        if (thirdQuantity) thirdQuantity.textContent = thirdValue.quantity;
+
+        updateLineChart(
+          data.item_revenues['Food']?.totalRevenue || 0,
+          data.item_revenues['Medicine']?.totalRevenue || 0,
+          data.item_revenues['Service']?.totalRevenue || 0,
+          data.item_revenues['Equipment']?.totalRevenue || 0
+        );
+    };
 
     const sections = document.querySelectorAll("main > [id]");
     const menuItems = document.querySelectorAll(".side-menu a");
@@ -31,12 +249,13 @@
         showSection(text);
       });
     });
-  });
+
+ });
 
 
 
 
-
+/* MENU HANDLING */
 const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
 allSideMenu.forEach(item => {
@@ -74,24 +293,7 @@ function adjustSidebar() {
 window.addEventListener('load', adjustSidebar);
 window.addEventListener('resize', adjustSidebar);
 
-/*
-// Arama butonunu toggle etme
-const searchButton = document.querySelector('#content nav form .form-input button');
-const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
-const searchForm = document.querySelector('#content nav form');
 
-searchButton.addEventListener('click', function (e) {
-    if (window.innerWidth < 768) {
-        e.preventDefault();
-        searchForm.classList.toggle('show');
-        if (searchForm.classList.contains('show')) {
-            searchButtonIcon.classList.replace('bx-search', 'bx-x');
-        } else {
-            searchButtonIcon.classList.replace('bx-x', 'bx-search');
-        }
-    }
-})
-*/
 
 // Notification Menu Toggle
 document.querySelector('.notification').addEventListener('click', function () {
@@ -135,137 +337,3 @@ window.addEventListener('click', function (e) {
 
 
 
-google.load("visualization", "1", {packages:["corechart"]});
-google.setOnLoadCallback(drawCharts);
-function drawCharts() {
-  // BEGIN LINE GRAPH
-
-const lineChart = new google.visualization.LineChart(document.getElementById('line-chart'));
-
-  let options = {
-    backgroundColor: 'transparent',
-    colors: ['cornflowerblue', 'tomato'],
-    fontName: 'Open Sans',
-    focusTarget: 'category',
-    chartArea: {
-      left: 50,
-      top: 10,
-      width: '100%',
-      height: '70%'
-    },
-    hAxis: {
-      textStyle: { fontSize: 11 },
-      format: 'HH:mm:ss',
-      baselineColor: 'transparent',
-      gridlines: { color: 'transparent' }
-    },
-    vAxis: {
-      minValue: 0,
-      maxValue: 50000,
-      baselineColor: '#DDD',
-      gridlines: { color: '#DDD', count: 4 },
-      textStyle: { fontSize: 11 }
-    },
-	legend: 'none',
-    animation: {
-      duration: 500,
-      easing: 'out',
-      startup: true  // Only true for first draw
-    }
-  };
-  let dataPoints = [['Time', 'Page Views', 'Unique Views']];
-  let firstDraw = true;
-
-  function randomNumber(base, step) {
-    return Math.floor((Math.random() * step) + base);
-  }
-
-  function addDataPoint() {
-    const now = new Date();
-    const pageViews = randomNumber(10000, 4000);
-    const uniqueViews = randomNumber(5000, 4000);
-
-    dataPoints.push([now, pageViews, uniqueViews]);
-
-    // Remove data older than 60 seconds
-    const cutoff = new Date(now.getTime() - 60000);
-    dataPoints = [dataPoints[0]].concat(
-      dataPoints.slice(1).filter(row => row[0] >= cutoff)
-    );
-
-    const dataTable = google.visualization.arrayToDataTable(dataPoints);
-
-    // Disable startup animation after first draw
-    if (!firstDraw) options.animation.startup = false;
-    lineChart.draw(dataTable, options);
-    firstDraw = false;
-
-
-  }
-
-  addDataPoint();
-  setInterval(addDataPoint, 1000);
-
-
-
-
-
-
-
-
-
-  // BEGIN PIE CHART
-
-  // pie chart data
-  var pieData = google.visualization.arrayToDataTable([
-    ['Country', 'Page Hits'],
-    ['USA',      7242],
-    ['Canada',   4563],
-    ['Mexico',   1345],
-    ['Sweden',    946],
-    ['Germany',  2150]
-  ]);
-  // pie chart options
-  var pieOptions = {
-  backgroundColor: 'transparent',
-  pieHole: 0.4,
-  colors: ["cornflowerblue", "olivedrab", "orange", "tomato", "crimson", "purple", "turquoise", "forestgreen", "navy", "gray"],
-  pieSliceText: 'value',
-  tooltip: {
-    text: 'percentage'
-  },
-  fontName: 'Open Sans',
-  chartArea: {
-      left: 50,
-    width: '100%',
-    height: '94%'
-  },
-  legend: {
-    textStyle: {
-      fontSize: 13
-    }
-  },
-  animation: {
-    duration: 500, // Adjust duration for visibility
-    easing: 'out' // Choose 'linear', 'inAndOut', etc. for different effects
-  }
-};
-  // draw pie chart
-  var pieChart = new google.visualization.PieChart(document.getElementById('pie-chart'));
-  pieChart.draw(pieData, pieOptions);
-
-  function updatePieChart() {
-  // Increment each value randomly for demonstration
-  pieData.setValue(0, 1, pieData.getValue(0, 1) + Math.floor(Math.random() * 100)); // USA
-  pieData.setValue(1, 1, pieData.getValue(1, 1) + Math.floor(Math.random() * 50));  // Canada
-  pieData.setValue(2, 1, pieData.getValue(2, 1) + Math.floor(Math.random() * 30));  // Mexico
-  pieData.setValue(3, 1, pieData.getValue(3, 1) + Math.floor(Math.random() * 20));  // Sweden
-  pieData.setValue(4, 1, pieData.getValue(4, 1) + Math.floor(Math.random() * 40));  // Germany
-
-  // Redraw the chart with updated data
-  pieChart.draw(pieData, pieOptions);
-}
-
-// Set interval to update chart every second
-setInterval(updatePieChart, 1000);
-}

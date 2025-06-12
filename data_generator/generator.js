@@ -22,7 +22,7 @@ const countries = {
 };
 
 const shippingCompanies = ['DHL', 'FedEx', 'UPS', 'Hermes', 'USPS'];
-const itemTypes = ['Food', 'Medicine', 'Service'];
+const itemTypes = ['Food', 'Medicine', 'Service', 'Equipment'];
 
 const OrderSchema = new mongoose.Schema({}, { strict: false });
 const OrderData = mongoose.model("Orders", OrderSchema, "orders");
@@ -71,7 +71,6 @@ function generateOrderAndUser() {
       telephone,
       shippingCompany,
       createdOn,
-      userEmail: email,
       totalOrderAmount: parseFloat(totalOrderAmount.toFixed(2))
     },
     items
