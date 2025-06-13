@@ -25,14 +25,8 @@ app.get("/", (req, res) => {
 const server = app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 const wss = new WebSocket.Server({ server });
 
-wss.on("connection", (ws) => {
-    console.log("Client connected to WebSocket");
-
-    UserData.watch().on("change", async (change) => {
-        console.log("NEW DATA FROM MONGO");
-
-        if (change.operationType === "insert") {
-            try {
+async function aggregateData(ws) {
+try {
                 const today = new Date();
                 const midnightToday = new Date(today.setHours(0, 0, 0, 0));
 
@@ -160,6 +154,43 @@ wss.on("connection", (ws) => {
             } catch (err) {
                 console.error("Aggregation error:", err);
             }
+}
+
+wss.on("connection", (ws) => {
+    console.log("Client connected to WebSocket");
+
+    ws.on("message", async (message) => {
+        try {
+            const { orderId, newStatus } = JSON.parse(message);
+
+            if (!orderId || !newStatus) {
+                console.warn("Invalid message format:", message);
+                return;
+            }
+
+            const result = await OrderData.updateOne(
+                { _id: new mongoose.Types.ObjectId(orderId) },
+                { $set: { "header.status": newStatus } }
+            );
+
+            if (result.modifiedCount > 0) {
+                console.log(`Order ${orderId} updated to status '${newStatus}'`);
+            } else {
+                console.warn(`Order ${orderId} not found or already in '${newStatus}'`);
+            }
+        } catch (err) {
+            console.error("Error processing WebSocket message:", err);
         }
+    });
+
+    OrderData.watch().on("change", async (change) => {
+        aggregateData(ws)
+
+    });
+    UserData.watch().on("change", async (change) => {
+        console.log("NEW DATA FROM MONGO");
+        aggregateData(ws)
+
+
     });
 });

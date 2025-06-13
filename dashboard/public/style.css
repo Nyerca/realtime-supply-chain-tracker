@@ -314,6 +314,24 @@ form {
   height:33px;
 }
 
+/* TABLE TD BUTTONS */
+.blue_button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--light);
+    font-size: 18px;
+    cursor: pointer;
+    background: var(--blue);
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    outline: none;
+}
+
 
 /* PROGRESS BAR */
 .progress {
@@ -726,9 +744,6 @@ form {
 }
 .projects-table .status-text.status-orange:before {
   border-color: #DA932C;
-}
-.projects-table .status-text.status-red:before {
-  border-color: #D65B4A;
 }
 
 

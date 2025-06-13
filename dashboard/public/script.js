@@ -1,5 +1,6 @@
 google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(drawCharts);
+const socket = new WebSocket('ws://localhost:3000');
 
 let pieChart, pieData, pieOptions;
 let lineChart, lineData, lineOptions;
@@ -51,53 +52,78 @@ let searchTerm;
 
 
 function fillOrders() {
-const num_projects = document.getElementById("num_projects");
-        if (num_projects) num_projects.textContent = "| " + filteredResults.length +" Projects";
-
+    const num_projects = document.getElementById("num_projects");
+    if (num_projects) num_projects.textContent = "| " + filteredResults.length + " Projects";
 
     const container = document.getElementById("order_rows");
+    container.innerHTML = ""; // Clear previous content
 
-        // Clear previous content
-        container.innerHTML = "";
+    filteredResults.forEach(order => {
+        const tr = document.createElement("tr");
 
-        filteredResults.forEach(order => {
-            const tr = document.createElement("tr");
+        const statusClass =
+            order.status === "Pending"
+                ? "status-orange"
+                : order.status === "Shipped"
+                ? "status-blue"
+                : order.status === "Received"
+                ? "status-green"
+                : "";
 
-            tr.innerHTML = `
-                <td>
-                    <p>${order.orderId}</p>
+        tr.innerHTML = `
+            <td>
+                <p>${order.orderId}</p>
+            </td>
+            <td>
+                <p>${new Date(order.createdOn).toLocaleString()}</p>
+            </td>
+            <td class="member">
+                <figure><img src="${order.png}" /></figure>
+                <div class="member-info">
+                    <p>${order.email}</p>
+                </div>
+            </td>
+            <td>
+                <p>$${order.totalOrderAmount}</p>
+            </td>
+            <td class="status">
+                    <span class="status-text ${statusClass}">${order.status}</span>
                 </td>
-                <td>
-                    <p>${new Date(order.createdOn).toLocaleString()}</p>
-                </td>
-                <td class="member">
-                    <figure><img src="${order.png}" /></figure>
-                    <div class="member-info">
-                        <p>${order.email}</p>
-                    </div>
-                </td>
-                <td>
-                    <p>$${order.totalOrderAmount}</p>
-                </td>
-                <td class="status">
-                    <span class="status-text status-orange">${order.status}</span>
-                </td>
-                <td>
-                    <form class="form" action="#" method="POST">
-                        <select class="action-box">
-                            <option>Actions</option>
-                            <option>Start project</option>
-                            <option>Send for QA</option>
-                            <option>Send invoice</option>
-                        </select>
-                    </form>
-                </td>
-            `;
+        `;
 
-            container.appendChild(tr);
-        });
+        if (order.status === "Pending" || order.status === "Shipped") {
+            const td = document.createElement("td");
+            const button = document.createElement("button");
 
+            button.type = "submit";
+            button.className = "search-btn blue_button";
 
+            let newStatus;
+            if (order.status === "Pending") {
+                button.id = "ship_button";
+                button.textContent = "Ship to customer";
+                newStatus = "Shipped";
+            } else if (order.status === "Shipped") {
+                button.id = "delivered_button";
+                button.textContent = "Delivered to customer";
+                newStatus = "Received";
+            }
+
+            // Send message over socket on click
+            button.addEventListener("click", () => {
+                const message = {
+                    orderId: order.orderId,
+                    newStatus: newStatus
+                };
+                socket.send(JSON.stringify(message));
+            });
+
+            td.appendChild(button);
+            tr.appendChild(td);
+        }
+
+        container.appendChild(tr);
+    });
 }
 
 function runFiltering() {
@@ -228,7 +254,7 @@ function drawCharts() {
     const targetIncome = 50000
     const targetCustomers = 40
 
-    const socket = new WebSocket('ws://localhost:3000');
+
     socket.onmessage = function(event) {
       const data = JSON.parse(event.data);
       console.log(data)
