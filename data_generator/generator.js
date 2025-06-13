@@ -102,7 +102,8 @@ async function insertOne() {
         language: userDetails.language,
         email: userDetails.email,
         landlinePhone: userDetails.telephone,
-        createdOn: new Date()
+        createdOn: new Date(),
+        png: `https://s3-us-west-2.amazonaws.com/s.cdpn.io/584938/people_${faker.datatype.number({ min: 1, max: 12 })}.png`
       },
       addresses: [
         {
@@ -112,7 +113,7 @@ async function insertOne() {
           country: userDetails.countryCode
         }
       ],
-      orders: [{ orderId: insertedOrder._id.toString() }]
+      orders: [insertedOrder._id]
     };
 
     await UserData.create(user);

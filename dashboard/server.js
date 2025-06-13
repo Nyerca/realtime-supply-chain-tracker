@@ -146,7 +146,6 @@ wss.on("connection", (ws) => {
                 });
 
                 const summary = {
-                    newUser: change.fullDocument,
                     orderCount,
                     userCount,
                     totalOrderAmount: totalOrderAmount[0]?.total || 0,

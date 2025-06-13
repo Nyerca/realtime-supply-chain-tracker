@@ -11,6 +11,9 @@ Windows: Open Notepad as Administrator, then open C:\Windows\System32\drivers\et
 Add this line:
 127.0.0.1 mongo1 mongo2 mongo3
 
+## Local connection String after mapping:
+mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=rs0
+
 ### Empty the db:
 db.orders.deleteMany({})
 db.users.deleteMany({})

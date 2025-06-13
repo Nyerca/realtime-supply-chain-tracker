@@ -43,7 +43,83 @@ function updateLineChart(food,medicine,service,equipment)  {
     firstDraw = false;
 }
 
+let ordersUsers;
+let filteredResults;
+let isSearching = false;
+let searchTerm;
 
+
+
+function fillOrders() {
+const num_projects = document.getElementById("num_projects");
+        if (num_projects) num_projects.textContent = "| " + filteredResults.length +" Projects";
+
+
+    const container = document.getElementById("order_rows");
+
+        // Clear previous content
+        container.innerHTML = "";
+
+        filteredResults.forEach(order => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>
+                    <p>${order.orderId}</p>
+                </td>
+                <td>
+                    <p>${new Date(order.createdOn).toLocaleString()}</p>
+                </td>
+                <td class="member">
+                    <figure><img src="${order.png}" /></figure>
+                    <div class="member-info">
+                        <p>${order.email}</p>
+                    </div>
+                </td>
+                <td>
+                    <p>$${order.totalOrderAmount}</p>
+                </td>
+                <td class="status">
+                    <span class="status-text status-orange">${order.status}</span>
+                </td>
+                <td>
+                    <form class="form" action="#" method="POST">
+                        <select class="action-box">
+                            <option>Actions</option>
+                            <option>Start project</option>
+                            <option>Send for QA</option>
+                            <option>Send invoice</option>
+                        </select>
+                    </form>
+                </td>
+            `;
+
+            container.appendChild(tr);
+        });
+
+
+}
+
+function runFiltering() {
+              if (isSearching) {
+                filteredResults = ordersUsers.filter(order => {
+                                return (
+                                  order.orderId.toLowerCase().includes(searchTerm) ||
+                                  order.createdOn.toLowerCase().includes(searchTerm) ||
+                                  order.totalOrderAmount.toString().includes(searchTerm) ||
+                                  order.status.toLowerCase().includes(searchTerm) ||
+                                  order.email.toLowerCase().includes(searchTerm)
+                                );
+                              });
+
+              } else {
+              filteredResults = ordersUsers;
+              }
+
+console.log("applyed filter: " + filteredResults);
+
+              fillOrders();
+}
 
 function drawCharts() {
     lineChart = new google.visualization.LineChart(document.getElementById('line-chart'));
@@ -224,6 +300,9 @@ function drawCharts() {
           data.item_revenues['Service']?.totalRevenue || 0,
           data.item_revenues['Equipment']?.totalRevenue || 0
         );
+
+        ordersUsers = data.ordersUsers
+        runFiltering()
     };
 
     const sections = document.querySelectorAll("main > [id]");
@@ -249,6 +328,19 @@ function drawCharts() {
         showSection(text);
       });
     });
+
+
+    const searchBtn = document.getElementById('search_btn');
+    const searchInput = document.getElementById('search_input');
+    searchBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+                searchTerm = searchInput.value.trim().toLowerCase();
+                console.log("searchTerm: " + searchTerm);
+              if (!searchTerm) {
+                isSearching = false;
+              } else {isSearching = true;}
+                runFiltering();
+          });
 
  });
 
@@ -294,18 +386,6 @@ window.addEventListener('load', adjustSidebar);
 window.addEventListener('resize', adjustSidebar);
 
 
-
-// Notification Menu Toggle
-document.querySelector('.notification').addEventListener('click', function () {
-    document.querySelector('.notification-menu').classList.toggle('show');
-});
-
-// Close menus if clicked outside
-window.addEventListener('click', function (e) {
-    if (!e.target.closest('.notification') && !e.target.closest('.profile')) {
-        document.querySelector('.notification-menu').classList.remove('show');
-    }
-});
 
 // Menülerin açılıp kapanması için fonksiyon
     function toggleMenu(menuId) {
