@@ -1,17 +1,12 @@
-const mongoose = require('mongoose');
 const faker = require('faker');
 faker.locale = 'en';
 
-mongoose.connect("mongodb://mongo1:27017,mongo2:27017,mongo3:27017/iot_db?replicaSet=rs0", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log("✅ Connected to MongoDB replica set");
-  startSeeding();
-}).catch(err => {
-  console.error("❌ Failed to connect to MongoDB:", err);
-  process.exit(1);
-});
+const MongoConnector = require('./mongoConnector');
+
+const mongo = new MongoConnector(
+  "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/iot_db?replicaSet=rs0",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
 
 const countries = {
   IT: { cities: ['Rome', 'Milan', 'Florence'], language: 'IT' },
@@ -24,10 +19,8 @@ const countries = {
 const shippingCompanies = ['DHL', 'FedEx', 'UPS', 'Hermes', 'USPS'];
 const itemTypes = ['Food', 'Medicine', 'Service', 'Equipment'];
 
-const OrderSchema = new mongoose.Schema({}, { strict: false });
-const OrderData = mongoose.model("Orders", OrderSchema, "orders");
-const UserSchema = new mongoose.Schema({}, { strict: false });
-const UserData = mongoose.model("Users", UserSchema, "users");
+let OrderData, UserData;
+let userInsertCounter = 0;
 
 function randomFromArray(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -85,8 +78,6 @@ function generateOrder(countryCodeOverride = null) {
   };
 }
 
-let userInsertCounter = 0;
-
 async function insertOne() {
   try {
     let useExistingUser = false;
@@ -108,7 +99,7 @@ async function insertOne() {
         { $push: { orders: insertedOrder._id } }
       );
 
-      console.log(`🔁 Added new order to existing user (${user._id}) at ${new Date().toISOString()}`);
+      console.log(`Added new order to existing user (${user._id}) at ${new Date().toISOString()}`);
     } else {
       const { order, metadata } = generateOrder();
       const insertedOrder = await OrderData.create(order);
@@ -143,6 +134,15 @@ async function insertOne() {
 }
 
 function startSeeding() {
-  insertOne(); // first insert immediately
-  setInterval(insertOne, 5000); // every 5 seconds
+  insertOne();
+  setInterval(insertOne, 5000);
 }
+
+(async () => {
+  await mongo.connect();
+
+  OrderData = mongo.getModel("Orders", {}, "orders");
+  UserData = mongo.getModel("Users", {}, "users");
+
+  startSeeding();
+})();

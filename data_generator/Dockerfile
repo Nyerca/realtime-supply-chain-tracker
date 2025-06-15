@@ -12,4 +12,4 @@ RUN npm install
 COPY .. .
 
 # Run the server
-CMD ["sh", "-c", "node wait-for-mongo.js && node generator.js"]
+CMD ["sh", "-c", "node generator.js"]

@@ -1,269 +1,237 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-    <meta charset="UTF-8">
-    <title>AdminHub Admin Dashboard v2.1</title>
-    <link rel="stylesheet" href="style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8">
+        <title>Realtime Supply Chain Tracker</title>
+        <link rel="stylesheet" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://demo.dashboardpack.com/architectui-html-free/main.css" rel="stylesheet"></head>
-<!-- My CSS -->
-<link rel="stylesheet" href="style.css">
+        <!-- Boxicons -->
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <link href="https://demo.dashboardpack.com/architectui-html-free/main.css" rel="stylesheet">
+        <!-- My CSS -->
+        <link rel="stylesheet" href="style.css">
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<title>Real-Time Supply Chain Tracker</title>
-</head>
-<body>
-<!-- SIDEBAR -->
-<section id="sidebar">
-    <a class="brand">
-        <i class='bx bxs-smile  bx-lg'></i>
-        <span class="text">AdminHub</span>
-    </a>
-    <ul class="side-menu top">
-        <li class="active">
-            <a href="#">
-                <i class='bx bxs-dashboard bx-sm' ></i>
-                <span class="text">Dashboard</span>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    </head>
+    <body>
+        <!-- SIDEBAR -->
+        <section id="sidebar">
+            <a class="brand">
+                <i class='bx bxs-smile  bx-lg'></i>
+                <span class="text">AdminHub</span>
             </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class='bx bxs-shopping-bag-alt bx-sm' ></i>
-                <span class="text">Orders</span>
-            </a>
-        </li>
-    </ul>
-</section>
-<!-- SIDEBAR -->
+            <ul class="side-menu top">
+                <li class="active">
+                    <a href="#">
+                        <i class='bx bxs-dashboard bx-sm' ></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class='bx bxs-shopping-bag-alt bx-sm' ></i>
+                        <span class="text">Orders</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+        <!-- SIDEBAR -->
 
+        <!-- CONTENT -->
+        <section id="content">
+            <!-- NAVBAR -->
+            <nav><i class='bx bx-menu bx-sm' ></i></nav>
+            <!-- NAVBAR -->
+            <!-- MAIN -->
+            <main>
+                <div id ="dashboard">
+                    <div class="head-title">
+                        <div class="left">
+                            <h1>Dashboard</h1>
+                            <ul class="breadcrumb">
+                                <li><a href="#">Dashboard</a></li>
+                                <li><i class='bx bx-chevron-right' ></i></li>
+                                <li><a class="active" href="#">Home</a></li>
+                            </ul>
+                        </div>
+                    </div>
 
-
-<!-- CONTENT -->
-<section id="content">
-    <!-- NAVBAR -->
-    <nav>
-        <i class='bx bx-menu bx-sm' ></i>
-    </nav>
-    <!-- NAVBAR -->
-
-
-    <!-- MAIN -->
-    <main>
-        <div id ="dashboard">
-            <div class="head-title">
-                <div class="left">
-                    <h1>Dashboard</h1>
-                    <ul class="breadcrumb">
+                    <ul class="box-info">
                         <li>
-                            <a href="#">Dashboard</a>
+                            <i class='bx bx-page bxs-calendar-check' ></i>
+                            <span class="text">
+                                <h3 id="new_orders"></h3>
+                                <p>New Order</p>
+                            </span>
                         </li>
-                        <li><i class='bx bx-chevron-right' ></i></li>
                         <li>
-                            <a class="active" href="#">Home</a>
+                            <i class='bx bx-page bxs-group' ></i>
+                            <span class="text">
+                                <h3 id="total_customers"></h3>
+                                <p>Total Customers</p>
+                            </span>
+                        </li>
+                        <li>
+                            <i class='bx bx-page bxs-dollar-circle' ></i>
+                            <span class="text">
+                                <h3 id="total_amount"></h3>
+                                <p>Total Revenue</p>
+                            </span>
+                        </li>
+                    </ul>
+
+                    <ul class="box-info">
+                        <li>
+                            <i class='bx bx-page bxs-calendar-check' ></i>
+                            <span class="text">
+                                <h3 id="pending_orders"></h3>
+                                <p>Pending Order</p>
+                            </span>
+                        </li>
+                        <li>
+                            <i class='bx bx-page bxs-calendar-check' ></i>
+                            <span class="text">
+                                <h3 id="shipped_orders"></h3>
+                                <p>Processed Order</p>
+                            </span>
+                        </li>
+                        <li>
+                            <i class='bx bx-page bxs-calendar-check' ></i>
+                            <span class="text">
+                                <h3 id="received_orders"></h3>
+                                <p>Closed Order</p>
+                            </span>
+                        </li>
+                    </ul>
+
+                    <ul class="box-info">
+                        <div class="widget-content">
+                            <i class='bx bx-page bxs-calendar-check' ></i>
+                            <div class="widget-content-outer">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left pr-2 fsize-1">
+                                        <div id="progress_value_income" class="widget-numbers mt-0 fsize-3">0%</div>
+                                    </div>
+                                    <div class="widget-content-right w-100">
+                                        <div class="progress-bar-xs progress">
+                                            <div class="progress-bar progress-bar-income" role="progressbar" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content-left fsize-1">
+                                    <p>Income Target: <b>50000.00 €</b></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget-content">
+                            <i class='bx bx-page bxs-calendar-check' ></i>
+                            <div class="widget-content-outer">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left pr-2 fsize-1">
+                                        <div id="progress_value_customers" class="widget-numbers mt-0 fsize-3">0%</div>
+                                    </div>
+                                    <div class="widget-content-right w-100">
+                                        <div class="progress-bar-xs progress">
+                                            <div class="progress-bar progress-bar-customers" role="progressbar" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-content-left fsize-1">
+                                    <p>Daily New Customers Target: <b>40</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </ul>
+
+                    <ul class="box-info">
+                        <li>
+                            <div class="container">
+                                <span class="text full_width">
+                                    <p>Top 3 item sold</p>
+                                </span>
+                                <div class="table table-striped table-responsive class-results">
+                                    <div class="podium">
+                                        <div class="podium-first">
+                                            <span id="first_item"></span>
+                                            <div id="first_quantity" class="podium-box"></div>
+                                        </div>
+                                        <div class="podium-second">
+                                            <span id="second_item"></span>
+                                            <div id="second_quantity" class="podium-box"></div>
+                                        </div>
+                                        <div class="podium-third">
+                                            <span id="third_item"></span>
+                                            <div id="third_quantity" class="podium-box"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="text full_width">
+                                <p>Items revenue</p>
+                                <div id="line-chart"></div>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="text full_width">
+                                <p>Orders per country</p>
+                                <div id="pie-chart"></div>
+                            </span>
                         </li>
                     </ul>
                 </div>
-            </div>
 
-            <ul class="box-info">
-                <li>
-                    <i class='bx bx-page bxs-calendar-check' ></i>
-                    <span class="text">
-						<h3 id="new_orders"></h3>
-						<p>New Order</p>
-					</span>
-                </li>
-                <li>
-                    <i class='bx bx-page bxs-group' ></i>
-                    <span class="text">
-						<h3 id="total_customers"></h3>
-						<p>Total Customers</p>
-					</span>
-                </li>
-                <li>
-                    <i class='bx bx-page bxs-dollar-circle' ></i>
-                    <span class="text">
-						<h3 id="total_amount"></h3>
-						<p>Total Revenue</p>
-					</span>
-                </li>
-
-            </ul>
-
-            <ul class="box-info">
-                <li>
-                    <i class='bx bx-page bxs-calendar-check' ></i>
-                    <span class="text">
-						<h3 id="pending_orders"></h3>
-						<p>Pending Order</p>
-					</span>
-                </li>
-                <li>
-                    <i class='bx bx-page bxs-calendar-check' ></i>
-                    <span class="text">
-						<h3 id="shipped_orders"></h3>
-						<p>Processed Order</p>
-					</span>
-                </li>
-                <li>
-                    <i class='bx bx-page bxs-calendar-check' ></i>
-                    <span class="text">
-						<h3 id="received_orders"></h3>
-						<p>Closed Order</p>
-					</span>
-                </li>
-            </ul>
-
-            <ul class="box-info">
-                <div class="widget-content">
-                    <i class='bx bx-page bxs-calendar-check' ></i>
-                    <div class="widget-content-outer">
-                        <div class="widget-content-wrapper">
-                            <div class="widget-content-left pr-2 fsize-1">
-                                <div id="progress_value_income" class="widget-numbers mt-0 fsize-3">0%</div>
+                <div id ="orders">
+                    <ul class="box-info">
+                        <form>
+                            <div class="form-input">
+                                <input id="search_input" type="search" placeholder="Search...">
+                                <button id="search_btn" type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
                             </div>
-                            <div class="widget-content-right w-100">
-                                <div class="progress-bar-xs progress">
-                                    <div class="progress-bar progress-bar-income" role="progressbar" style="width: 0%;"></div>
+                        </form>
+                    </ul>
+
+                    <ul class="box-info">
+
+                        <li>
+                            <div class="projects mb-4">
+                                <div class="projects-inner">
+                                    <header class="projects-header">
+                                        <div class="title">Ongoing Projects</div>
+                                        <div id="num_projects" class="count">| 0 Projects</div>
+                                        <i class="zmdi zmdi-download"></i>
+                                    </header>
+                                    <table class="projects-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Order Id</th>
+                                            <th>Created at</th>
+                                            <th>User email</th>
+                                            <th>Total Order Amount</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="order_rows">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
-                        <div class="widget-content-left fsize-1">
-                            <p>Income Target: <b>50000.00 €</b></p>
-                        </div>
-                    </div>
+                        </li>
+                    </ul>
+
+
                 </div>
-
-                <div class="widget-content">
-                    <i class='bx bx-page bxs-calendar-check' ></i>
-                    <div class="widget-content-outer">
-                        <div class="widget-content-wrapper">
-                            <div class="widget-content-left pr-2 fsize-1">
-                                <div id="progress_value_customers" class="widget-numbers mt-0 fsize-3">0%</div>
-                            </div>
-                            <div class="widget-content-right w-100">
-                                <div class="progress-bar-xs progress">
-                                    <div class="progress-bar progress-bar-customers" role="progressbar" style="width: 0%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget-content-left fsize-1">
-                            <p>Daily New Customers Target: <b>40</b></p>
-                        </div>
-                    </div>
-                </div>
-            </ul>
-
-            <ul class="box-info">
-                <li>
-                    <div class="container">
-  <span class="text full_width">
-						<p>Top 3 item sold</p>
-					</span>
-                        <div class="table table-striped table-responsive class-results">
-                            <div class="podium">
-                                <div class="podium-first">
-                                    <span id="first_item"></span>
-                                    <div id="first_quantity" class="podium-box">
-
-                                    </div>
-                                </div>
-                                <div class="podium-second">
-                                    <span id="second_item"></span>
-                                    <div id="second_quantity" class="podium-box">
-
-                                    </div>
-                                </div>
-                                <div class="podium-third">
-                                    <span id="third_item"></span>
-                                    <div id="third_quantity" class="podium-box">
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li>
-					<span class="text full_width">
-						<p>Items revenue</p>
-						<div id="line-chart"></div>
-					</span>
-
-                </li>
-                <li>
-					<span class="text full_width">
-						<p>Orders per country</p>
-						<div id="pie-chart"></div>
-					</span>
-
-                </li>
-            </ul>
-
-        </div>
-
-        <div id ="orders">
-            <ul class="box-info">
-                <form>
-                    <div class="form-input">
-                        <input id="search_input" type="search" placeholder="Search...">
-                        <button id="search_btn" type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
-                    </div>
-                </form>
-            </ul>
-
-            <ul class="box-info">
-
-                <li>
-                    <div class="projects mb-4">
-                        <div class="projects-inner">
-                            <header class="projects-header">
-                                <div class="title">Ongoing Projects</div>
-                                <div id="num_projects" class="count">| 0 Projects</div>
-                                <i class="zmdi zmdi-download"></i>
-                            </header>
-                            <table class="projects-table">
-                                <thead>
-                                <tr>
-                                    <th>Order Id</th>
-                                    <th>Created at</th>
-                                    <th>User email</th>
-                                    <th>Total Order Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody id="order_rows">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+            </main>
+            <!-- MAIN -->
+        </section>
+        <!-- CONTENT -->
 
 
-        </div>
-    </main>
-    <!-- MAIN -->
-</section>
-<!-- CONTENT -->
-
-
-<script src="script.js"></script>
-</body>
-</html>
-
-</body>
+        <script src="script.js"></script>
+    </body>
 </html>
