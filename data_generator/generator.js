@@ -4,7 +4,7 @@ faker.locale = 'en';
 const MongoConnector = require('./mongoConnector');
 
 const mongo = new MongoConnector(
-  "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/iot_db?replicaSet=rs0",
+  "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/db?replicaSet=rs0",
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 

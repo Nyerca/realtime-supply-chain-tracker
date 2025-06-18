@@ -18,6 +18,11 @@ mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=rs0
 db.orders.deleteMany({})
 db.users.deleteMany({})
 
+### Look at replica set initialization:
+Manually verify replica set status: 
+Connect to one of the MongoDB containers and check the replica set status:  
+docker exec -it mongo1 mongo rs.status()
+
 
 ### Investigations:
 Open powershell and:        docker inspect mongo1 mongo2 mongo3 | Select-String -Pattern '"Name"|"IPAddress"'

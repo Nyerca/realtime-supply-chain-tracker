@@ -1,6 +1,5 @@
 #!/bin/bash
 sleep 10 # Give containers some time to start
-
 # Wait for mongo1 to be ready before initiating
 mongosh --host mongo1:27017 --eval "db.adminCommand('ping')" --quiet
 while [ $? -ne 0 ]; do

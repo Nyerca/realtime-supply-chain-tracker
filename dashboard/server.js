@@ -7,7 +7,7 @@ const MongoConnector = require("./mongoConnector");
 const app = express();
 const PORT = 3000;
 
-const mongoUri = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/iot_db?replicaSet=rs0";
+const mongoUri = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/db?replicaSet=rs0";
 const db = new MongoConnector(mongoUri);
 
 (async () => {
