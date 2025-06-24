@@ -1,3 +1,6 @@
+# Project Short Description:
+MongoDash : dashboard updated in realtime with new inserts on MongoDB, using Node.js change stream and MongoDB Replication we achieve high availability and react in real time updating the dashboard with new aggregations.
+
 # Project Description
 The project is a sample dashboard for an order+users domain (two collections), the dashboard is updated in realtime and the Node.js server captures the event in realtime.
 To capture the event in realtime it uses 'Change Streams'
@@ -19,6 +22,15 @@ To run the project ``` docker-compose up --build -d ```
 
 To stop the project: ``` docker-compose down -v ```
 -v removes volumes, ensuring clean state
+
+
+## High Availability:
+Being replicated in mongo1 (primary), mongo2, mongo3 if I stop mongo1:
+- a new primary is elected
+- mongoexpress keeps working
+- generator keeps working
+- dashboard keeps working if refreshed
+- mongodbcompass doesnt work anymore (even if removing the mongo1)
 
 ## Connect from MongoDB Compass or source machine using the following connection string
 ```mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=rs0```

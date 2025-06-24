@@ -73,8 +73,6 @@ services:
     volumes:
       - ./data_generator:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - "3001:3001"
     depends_on:
       - mongo1
       - mongo2

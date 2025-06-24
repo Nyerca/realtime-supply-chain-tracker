@@ -122,12 +122,15 @@ const db = new MongoConnector(mongoUri);
                 item_revenues
             };
 
+            console.log("Sending data to WebSocket client: ", summary)
+
             ws.send(JSON.stringify(summary));
         } catch (err) {
             console.error("Aggregation error:", err);
         }
     }
 
+    // to update the order from dashboard
     async function handleWebSocketMessage(message, OrderData) {
         try {
             const { orderId, newStatus } = JSON.parse(message);
